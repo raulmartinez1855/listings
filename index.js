@@ -23,13 +23,13 @@ router.get('/api', async (req, res) => {
   });
 });
 
-router.get('/seed', async (req, res) => {
-  Seed();
-  Listing.countDocuments({}, (err, numRecords) => {
-    if (err) return err;
-    res.redirect('/api');
-  });
-});
+// router.get('/seed', async (req, res) => {
+//   Seed();
+//   Listing.countDocuments({}, (err, numRecords) => {
+//     if (err) return err;
+//     res.redirect('/api');
+//   });
+// });
 
 app.use('/', router);
 app.listen(port);
