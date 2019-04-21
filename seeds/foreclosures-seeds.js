@@ -54,4 +54,4 @@ const saveResults = async () => {
   });
 };
 
-saveResults();
+module.exports = saveResults;
