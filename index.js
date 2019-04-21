@@ -1,9 +1,12 @@
 const express = require('express');
-const Seed = require('./seeds/foreclosures-seeds');
+// const Seed = require('./seeds/foreclosures-seeds');
+const cors = require('cors');
 const Listing = require('./models/Listing');
 const app = express();
 const router = express.Router();
 const port = process.env.PORT || 3000;
+
+app.use(cors());
 
 router.get('/api', async (req, res) => {
   const pageNo = Number(req.query.pageNo) || 1;
