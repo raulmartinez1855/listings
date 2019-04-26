@@ -9,6 +9,7 @@ const rawData = require('./dailyScraper');
 const address = /^(property)/;
 const lastAddress = /^(last\sknown)/;
 const versus = /^vs/;
+const [month, day, year] = new Date().toLocaleDateString('en-US').split('/');
 
 const fmtCurrentAddress = str => {
   const regexp = /property address:(.*?)fl(.*?)\d{5}/;
@@ -40,7 +41,13 @@ const fmtData = async () => {
       },
       { name: 'N/A', address: 'N/A' }
     );
-    return { caseNumber, ...defData, notice: obj.CLASSNAME };
+
+    return {
+      caseNumber,
+      dateCreated: `${month}/${day}/${year}`,
+      ...defData,
+      notice: obj.CLASSNAME
+    };
   });
 
   return matches;
