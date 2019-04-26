@@ -1,58 +1,49 @@
 /*
     REQUIREMENTS: 
-        - Case Number for every result
-        - Flag for 'Foreclosure Sale Notice'
-        - Property Address || Last Known Address
-        - Defendant Name
+        X Case Number for every result 
+        X Flag for 'Foreclosure Sale Notice'
+        X Property Address || Last Known Address
+        X Defendant Name
 */
-
-const rawData = require('./4-23-2019.json');
-const json = JSON.parse(JSON.stringify(rawData));
-const listings = json.searchresults.result;
-const regex = /^(property)|^(last\sknown)/;
+const rawData = require('./dailyScraper');
 const address = /^(property)/;
 const lastAddress = /^(last\sknown)/;
 const versus = /^vs/;
 
-const filtered = listings.filter(obj => {
-  const adBody = obj.ADBODY[0].split('<dd>');
-  const address = adBody.find(v => v.toLowerCase().match(regex));
-  return address;
-});
+const fmtCurrentAddress = str => {
+  const regexp = /property address:(.*?)fl(.*?)\d{5}/;
+  return str.match(regexp) ? regexp.exec(str)[0].substring(18) : str;
+};
 
-const matches = filtered.map(obj => {
-  const adBody = obj.ADBODY[0].split('<dd>');
-  return adBody.reduce(
-    (acc, s, i) => {
-      const str = s.toLowerCase();
+const fmtData = async () => {
+  const json = await rawData();
+  const listings = await json.searchresults.result;
 
-      if (str.match(versus)) {
-        acc.name = adBody[i + 1];
-      }
+  const matches = await listings.map(obj => {
+    const caseNumber = obj.CASENUMBER.split(' ')[0];
+    const adBody = obj.ADBODY[0].split('<dd>');
+    const defData = adBody.reduce(
+      (acc, s, i) => {
+        const str = s.toLowerCase();
 
-      if (str.match(address)) {
-        const regexp = /property address:(.*?)fl(.*?)\d{5}/;
+        if (str.match(versus)) acc.name = adBody[i + 1];
 
-        acc.address = str.match(regexp)
-          ? regexp.exec(str)[0].substring(18)
-          : str;
-      }
+        if (str.match(lastAddress)) {
+          acc.address = str;
+        }
 
-      if (str.match(lastAddress)) {
-        console.log(str);
-      }
+        if (str.match(address)) {
+          acc.address = fmtCurrentAddress(str);
+        }
 
-      return acc;
-    },
-    { name: 'N/A' }
-  );
-});
+        return acc;
+      },
+      { name: 'N/A', address: 'N/A' }
+    );
+    return { caseNumber, ...defData, notice: obj.CLASSNAME };
+  });
 
-const saleNotices = listings
-  .filter(v => v.CLASSNAME === 'FCL Ntc Sale FL')
-  .map(v => v.ADBODY[0].split('<dd>'));
+  return matches;
+};
 
-// const sttr =
-//   '';
-
-// console.log(sttr.match('property address:(.*?)any')[1]);
+module.exports = fmtData;
