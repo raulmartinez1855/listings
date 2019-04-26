@@ -8,6 +8,7 @@ mongoose.connect(process.env.DB_CONNECTION, { useNewUrlParser: true }, err => {
 const Schema = mongoose.Schema;
 const ListingSchema = new Schema({
   caseNumber: { type: String, unique: true },
+  dateCreated: String,
   name: String,
   address: String,
   notice: String
