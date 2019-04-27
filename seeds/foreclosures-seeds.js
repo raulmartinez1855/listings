@@ -10,7 +10,7 @@ mongoose.connect(process.env.DB_CONNECTION, { useNewUrlParser: true }, err => {
 const saveResults = async () => {
   const results = await fmtData();
 
-  await results.map(obj => {
+  return await results.map(obj => {
     const item = new Listing(obj);
 
     item.save(err => {
@@ -19,4 +19,10 @@ const saveResults = async () => {
   });
 };
 
-saveResults();
+saveResults().then(res => {
+  console.log(`${res.length} listings scraped`);
+  setTimeout(() => {
+    mongoose.disconnect();
+    process.exit(0);
+  }, 3000);
+});

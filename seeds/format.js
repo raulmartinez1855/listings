@@ -16,6 +16,10 @@ const fmtCurrentAddress = str => {
   return str.match(regexp) ? regexp.exec(str)[0].substring(18) : str;
 };
 
+const rmvCommas = str => {
+  return str.replace(/,/g, '');
+};
+
 const fmtData = async () => {
   const json = await rawData();
   const listings = await json.searchresults.result;
@@ -27,14 +31,14 @@ const fmtData = async () => {
       (acc, s, i) => {
         const str = s.toLowerCase();
 
-        if (str.match(versus)) acc.name = adBody[i + 1];
+        if (str.match(versus)) acc.name = rmvCommas(adBody[i + 1]);
 
         if (str.match(lastAddress)) {
-          acc.address = str;
+          acc.address = rmvCommas(str);
         }
 
         if (str.match(address)) {
-          acc.address = fmtCurrentAddress(str);
+          acc.address = rmvCommas(fmtCurrentAddress(str));
         }
 
         return acc;
