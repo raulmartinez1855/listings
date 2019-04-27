@@ -16,8 +16,8 @@ const fmtCurrentAddress = str => {
   return str.match(regexp) ? regexp.exec(str)[0].substring(18) : str;
 };
 
-const rmvCommas = str => {
-  return str.replace(/,/g, '');
+const csvComplaint = str => {
+  return str.replace(/#|,/g, '');
 };
 
 const fmtData = async () => {
@@ -31,14 +31,14 @@ const fmtData = async () => {
       (acc, s, i) => {
         const str = s.toLowerCase();
 
-        if (str.match(versus)) acc.name = rmvCommas(adBody[i + 1]);
+        if (str.match(versus)) acc.name = csvComplaint(adBody[i + 1]);
 
         if (str.match(lastAddress)) {
-          acc.address = rmvCommas(str);
+          acc.address = csvComplaint(str);
         }
 
         if (str.match(address)) {
-          acc.address = rmvCommas(fmtCurrentAddress(str));
+          acc.address = csvComplaint(fmtCurrentAddress(str));
         }
 
         return acc;
