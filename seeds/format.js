@@ -29,7 +29,7 @@ const fmtData = async () => {
     .map(obj => {
       const caseNumber = obj.CASENUMBER.split(' ')[0];
       const adBody = obj.ADBODY[0].split('<dd>');
-      console.log(obj.CLASSNAME);
+
       const defData = adBody.reduce(
         (acc, s, i) => {
           const str = s.toLowerCase();

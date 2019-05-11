@@ -10,19 +10,16 @@ mongoose.connect(process.env.DB_CONNECTION, { useNewUrlParser: true }, err => {
 const saveResults = async () => {
   const results = await fmtData();
 
-  return await results.map(obj => {
+  const saveToDB = results.map(obj => {
     const item = new Listing(obj);
 
-    item.save(err => {
-      if (err) console.error(err);
+    return item.save(err => {
+      if (err.code === 11000) {
+        console.log('duplicate prevented');
+      }
     });
   });
+  return saveToDB;
 };
 
-saveResults().then(res => {
-  console.log(`${res.length} listings scraped`);
-  setTimeout(() => {
-    mongoose.disconnect();
-    process.exit(0);
-  }, 3000);
-});
+module.exports = saveResults;

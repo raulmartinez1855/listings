@@ -1,7 +1,8 @@
+require('dotenv').config();
 const express = require('express');
-// const Seed = require('./seeds/foreclosures-seeds');
 const cors = require('cors');
 const Listing = require('./models/Listing');
+const saveResults = require('./seeds/foreclosures-seeds');
 const app = express();
 const router = express.Router();
 const port = process.env.PORT || 3000;
@@ -26,13 +27,13 @@ router.get('/api', async (req, res) => {
   });
 });
 
-// router.get('/seed', async (req, res) => {
-//   Seed();
-//   Listing.countDocuments({}, (err, numRecords) => {
-//     if (err) return err;
-//     res.redirect('/api');
-//   });
-// });
+router.get('/seed', async (req, res) => {
+  if (req.query.idApiKey !== process.env.API_KEY) {
+    res.send('nope');
+  }
+  const results = await saveResults();
+  await res.json({ found: results.length });
+});
 
 app.use('/', router);
 app.listen(port);
